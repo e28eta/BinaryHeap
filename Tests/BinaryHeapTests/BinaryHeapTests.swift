@@ -1,7 +1,7 @@
 import XCTest
 @testable import BinaryHeap
 
-class Foo: Comparable, CustomStringConvertible {
+class Foo: Comparable {
     let bar: Int
 
     init(_ bar: Int) {
@@ -14,10 +14,6 @@ class Foo: Comparable, CustomStringConvertible {
 
     static func ==(_ lhs: Foo, _ rhs: Foo) -> Bool {
         return lhs.bar == rhs.bar
-    }
-
-    var description: String {
-        return String(bar)
     }
 }
 

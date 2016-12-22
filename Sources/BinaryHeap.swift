@@ -5,7 +5,7 @@ fileprivate typealias CompareElementFunction = (UnsafeRawPointer, UnsafeRawPoint
 /*:
  Wrapper around CFBinaryHeap
  */
-public class BinaryHeap<Element: AnyObject & CustomStringConvertible> {
+public class BinaryHeap<Element: AnyObject> {
     let heap: CFBinaryHeap
 
     public convenience init(by areInIncreasingOrder: @escaping ((Element, Element) -> Bool)) {
