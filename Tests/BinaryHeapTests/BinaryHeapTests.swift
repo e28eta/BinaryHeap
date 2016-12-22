@@ -30,36 +30,35 @@ struct Baz {
 }
 
 class BinaryHeapTests: XCTestCase {
-    func testPopInSortedOrder() {
-        let h = BinaryHeap<Foo>()
+    func createFoos(ascending: Bool = true) -> (BinaryHeap<Foo>, [Foo]) {
+        let heap = BinaryHeap<Foo>(ascending: ascending)
 
-        let foos = [Foo(10), Foo(2), Foo(8), Foo(5)]
-        for foo in foos {
-            h.push(foo)
-        }
-
-        let sortedFoos = foos.sorted()
-
-        XCTAssertEqual(sortedFoos[0], h.peek(), "peek should result in first element")
-        XCTAssertEqual(sortedFoos[0], h.peek(), "peek should result in first element")
-
-        for foo in sortedFoos {
-            XCTAssertEqual(foo, h.pop(), "Heap should pop Foos in sorted order")
-        }
-        XCTAssertNil(h.pop(), "Empty heap pops() nil")
-    }
-
-    func testReverseOrder() {
-        let heap = BinaryHeap<Foo>(ascending: false)
-
-        let foos = [Foo(10), Foo(1)]
+        let foos = [Foo(10), Foo(2), Foo(8), Foo(5), Foo(7)]
         for foo in foos {
             heap.push(foo)
         }
 
-        XCTAssertEqual(heap.pop(), foos[0], "Heap should pop foos in reverse sorted order")
-        XCTAssertEqual(heap.pop(), foos[1], "Heap should pop foos in reverse sorted order")
+        return (heap, foos.sorted())
+    }
+
+    func testPopInSortedOrder() {
+        let (heap, foos) = createFoos()
+
+        XCTAssertEqual(foos[0], heap.peek(), "peek should result in first element")
+        XCTAssertEqual(foos[0], heap.peek(), "peek should result in first element")
+
+        for foo in foos {
+            XCTAssertEqual(foo, heap.pop(), "Heap should pop Foos in sorted order")
+        }
         XCTAssertNil(heap.pop(), "Empty heap pops() nil")
+    }
+
+    func testReverseOrder() {
+        let (heap, foos) = createFoos(ascending: false)
+        let reverseFoos = foos.reversed()
+
+        XCTAssertEqual(heap.pop(), reverseFoos.first, "Heap should pop foos in reverse sorted order")
+        XCTAssertEqual(heap.pop(), reverseFoos.dropFirst().first, "Heap should pop foos in reverse sorted order")
     }
 
     func testNonComparable() {
@@ -86,18 +85,22 @@ class BinaryHeapTests: XCTestCase {
     }
 
     func testCount() {
-        let heap = BinaryHeap<Foo>()
+        XCTAssertEqual(BinaryHeap<Foo>().count(), 0, "Empty heap has 0 count")
 
-        XCTAssertEqual(heap.count(), 0)
+        let (heap, foos) = createFoos()
 
-        let foos = [Foo(10), Foo(8), Foo(9), Foo(0)]
-        for foo in foos {
-            heap.push(foo)
-        }
-
-        XCTAssertEqual(heap.count(), 4)
+        XCTAssertEqual(heap.count(), foos.count)
         let _ = heap.pop()
-        XCTAssertEqual(heap.count(), 3)
+        XCTAssertEqual(heap.count(), foos.count - 1)
+    }
+
+    func testContains() {
+        let (heap, foos) = createFoos()
+
+        for foo in foos {
+            XCTAssertTrue(heap.contains(foo))
+        }
+        XCTAssertFalse(heap.contains(Foo(-1)))
     }
 
 
@@ -108,6 +111,7 @@ class BinaryHeapTests: XCTestCase {
             ("testNonComparable", testNonComparable),
             ("testNonObject", testNonObject),
             ("testCount", testCount),
+            ("testContains", testContains),
         ]
     }
 }
