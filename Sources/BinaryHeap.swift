@@ -1,7 +1,5 @@
 import Foundation
 
-fileprivate typealias CompareElementFunction = (UnsafeRawPointer, UnsafeRawPointer) -> CFComparisonResult
-
 /*:
  Wrapper around CFBinaryHeap
  */
@@ -66,8 +64,6 @@ public class BinaryHeap<Element: AnyObject> {
 
         return Unmanaged<Element>.fromOpaque(result).takeUnretainedValue()
     }
-
-
 }
 
 extension BinaryHeap where Element: Comparable {
@@ -81,7 +77,7 @@ extension BinaryHeap where Element: Comparable {
 }
 
 fileprivate class CompareBox {
-    let compare: CompareElementFunction
+    let compare: ((UnsafeRawPointer, UnsafeRawPointer) -> CFComparisonResult)
 
     init<T: AnyObject>(by areInIncreasingOrder: @escaping ((T, T) -> Bool)) {
         self.compare = { (p1: UnsafeRawPointer, p2: UnsafeRawPointer) -> CFComparisonResult in
