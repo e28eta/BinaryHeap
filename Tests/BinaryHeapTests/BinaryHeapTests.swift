@@ -135,6 +135,23 @@ class BinaryHeapTests: XCTestCase {
         }
     }
 
+    func testCopy() {
+        let (heap, _) = createFoos()
+
+        let copy = BinaryHeap(heap: heap)
+
+        XCTAssertEqual(heap.count(), copy.count())
+        XCTAssertEqual(heap.peek(), copy.pop())
+        XCTAssertGreaterThan(heap.count(), copy.count())
+
+        copy.removeAllObjects()
+
+        XCTAssertGreaterThan(heap.count(), 0)
+        XCTAssertEqual(copy.count(), 0)
+
+        XCTAssertNotNil(heap.peek())
+        XCTAssertNil(copy.pop())
+    }
 
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
         return [
@@ -146,6 +163,7 @@ class BinaryHeapTests: XCTestCase {
             ("testContains", testContains),
             ("testRemoveAllValues", testRemoveAllValues),
             ("testMemoryUsage", testMemoryUsage),
+            ("testCopy", testCopy),
         ]
     }
 }

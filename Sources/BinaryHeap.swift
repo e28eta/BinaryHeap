@@ -49,6 +49,10 @@ public class BinaryHeap<Element> {
         heap = CFBinaryHeapCreate(nil, 0, &callbacks, &context)
     }
 
+    public init(heap: BinaryHeap<Element>) {
+        self.heap = CFBinaryHeapCreateCopy(nil, 0, heap.heap)
+    }
+
     deinit {
         removeAllObjects()
     }
