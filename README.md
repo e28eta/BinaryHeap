@@ -5,6 +5,5 @@ After a very helpful discussion with @jtbandes on twitter, I've got something th
 to be working.
 
 TODO:
-- Verify memory correctness
 - Expose more CFBinaryHeap functionality
 

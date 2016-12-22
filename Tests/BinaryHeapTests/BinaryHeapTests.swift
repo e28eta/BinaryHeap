@@ -121,6 +121,20 @@ class BinaryHeapTests: XCTestCase {
         XCTAssertNil(heap.pop())
     }
 
+    func testMemoryUsage() {
+        for _ in 0...2 {
+            let fooHeap = BinaryHeap<Foo>()
+            let barHeap = BinaryHeap<Bar>() { $0.value < $1.value }
+            let bazHeap = BinaryHeap<Baz>() { $0.value < $1.value }
+
+            for n in 0...1000 {
+                fooHeap.push(Foo(n))
+                barHeap.push(Bar(n))
+                bazHeap.push(Baz(value: n))
+            }
+        }
+    }
+
 
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
         return [
@@ -131,6 +145,7 @@ class BinaryHeapTests: XCTestCase {
             ("testCount", testCount),
             ("testContains", testContains),
             ("testRemoveAllValues", testRemoveAllValues),
+            ("testMemoryUsage", testMemoryUsage),
         ]
     }
 }

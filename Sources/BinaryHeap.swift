@@ -19,7 +19,7 @@ public class BinaryHeap<Element> {
         },
             release: { _, obj in
                 guard let obj = obj else { return }
-                Unmanaged<AnyObject>.fromOpaque(obj).release()
+                let _ = Unmanaged<AnyObject>.fromOpaque(obj).autorelease()
         },
             copyDescription: { obj in
                 guard let obj = obj else { return nil }
@@ -38,7 +38,7 @@ public class BinaryHeap<Element> {
 
         var context = CFBinaryHeapCompareContext(
             version: 0,
-            info: Unmanaged.passRetained(compareBox).toOpaque(),
+            info: Unmanaged.passRetained(compareBox).autorelease().toOpaque(),
             retain: {
                 UnsafeRawPointer(Unmanaged<CompareBox>.fromOpaque($0!).retain().toOpaque())
         }, release: {
@@ -49,8 +49,12 @@ public class BinaryHeap<Element> {
         heap = CFBinaryHeapCreate(nil, 0, &callbacks, &context)
     }
 
+    deinit {
+        removeAllObjects()
+    }
+
     public func push(_ e: Element) {
-        let pointer = Unmanaged<AnyObject>.passRetained(e as AnyObject).toOpaque()
+        let pointer = Unmanaged<AnyObject>.passRetained(e as AnyObject).autorelease().toOpaque()
 
         CFBinaryHeapAddValue(heap, pointer)
     }
@@ -78,13 +82,13 @@ public class BinaryHeap<Element> {
     }
 
     public func count(of e: Element) -> Int {
-        let pointer = Unmanaged<AnyObject>.passRetained(e as AnyObject).toOpaque()
+        let pointer = Unmanaged<AnyObject>.passUnretained(e as AnyObject).toOpaque()
 
         return CFBinaryHeapGetCountOfValue(heap, pointer)
     }
 
     public func contains(_ e: Element) -> Bool {
-        let pointer = Unmanaged<AnyObject>.passRetained(e as AnyObject).toOpaque()
+        let pointer = Unmanaged<AnyObject>.passUnretained(e as AnyObject).toOpaque()
 
         return CFBinaryHeapContainsValue(heap, pointer)
     }
