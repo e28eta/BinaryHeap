@@ -25,6 +25,10 @@ class Bar {
     }
 }
 
+struct Baz {
+    let value: Int
+}
+
 class BinaryHeapTests: XCTestCase {
     func testPopInSortedOrder() {
         let h = BinaryHeap<Foo>()
@@ -68,6 +72,16 @@ class BinaryHeapTests: XCTestCase {
     }
 
 
+    func testNonObject() {
+        let heap = BinaryHeap<AnyObject>() { ($0 as! Baz).value < ($1 as! Baz).value }
+
+        let bazs = [Baz(value: 15), Baz(value: 10)]
+        for baz in bazs {
+            heap.push(baz as AnyObject)
+        }
+
+        XCTAssertEqual((heap.pop() as? Baz)?.value, 10)
+    }
 
 
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
