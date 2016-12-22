@@ -2,18 +2,26 @@ import XCTest
 @testable import BinaryHeap
 
 class Foo: Comparable {
-    let bar: Int
+    let value: Int
 
-    init(_ bar: Int) {
-        self.bar = bar
+    init(_ value: Int) {
+        self.value = value
     }
 
     static func <(_ lhs: Foo, _ rhs: Foo) -> Bool {
-        return lhs.bar < rhs.bar
+        return lhs.value < rhs.value
     }
 
     static func ==(_ lhs: Foo, _ rhs: Foo) -> Bool {
-        return lhs.bar == rhs.bar
+        return lhs.value == rhs.value
+    }
+}
+
+class Bar {
+    let value: Int
+
+    init(_ value: Int) {
+        self.value = value
     }
 }
 
@@ -47,12 +55,26 @@ class BinaryHeapTests: XCTestCase {
         XCTAssertNil(heap.pop(), "Empty heap pops() nil")
     }
 
+    func testNonComparable() {
+        let heap = BinaryHeap<Bar>() { $0.value < $1.value }
+
+        let bars = [Bar(1), Bar(10), Bar(3)]
+        for bar in bars {
+            heap.push(bar)
+        }
+
+        XCTAssertEqual(heap.pop()?.value, bars[0].value,
+                       "Heap should work with non-Comparable objects if comparison closure provided")
+    }
+
 
 
 
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
         return [
             ("testPopInSortedOrder", testPopInSortedOrder),
+            ("testReverseOrder", testReverseOrder),
+            ("testNonComparable", testNonComparable)
         ]
     }
 }
