@@ -74,7 +74,6 @@ class BinaryHeapTests: XCTestCase {
                        "Heap should work with non-Comparable objects if comparison closure provided")
     }
 
-
     func testNonObject() {
         let heap = BinaryHeap<Baz>() { $0.value < $1.value }
 
@@ -86,6 +85,21 @@ class BinaryHeapTests: XCTestCase {
         XCTAssertEqual(heap.pop()?.value, 10)
     }
 
+    func testCount() {
+        let heap = BinaryHeap<Foo>()
+
+        XCTAssertEqual(heap.count(), 0)
+
+        let foos = [Foo(10), Foo(8), Foo(9), Foo(0)]
+        for foo in foos {
+            heap.push(foo)
+        }
+
+        XCTAssertEqual(heap.count(), 4)
+        let _ = heap.pop()
+        XCTAssertEqual(heap.count(), 3)
+    }
+
 
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
         return [
@@ -93,6 +107,7 @@ class BinaryHeapTests: XCTestCase {
             ("testReverseOrder", testReverseOrder),
             ("testNonComparable", testNonComparable),
             ("testNonObject", testNonObject),
+            ("testCount", testCount),
         ]
     }
 }

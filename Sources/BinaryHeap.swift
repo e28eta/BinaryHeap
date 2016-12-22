@@ -72,6 +72,10 @@ public class BinaryHeap<Element> {
 
         return (Unmanaged<AnyObject>.fromOpaque(result).takeUnretainedValue() as! Element)
     }
+
+    public func count() -> Int {
+        return CFBinaryHeapGetCount(heap)
+    }
 }
 
 extension BinaryHeap where Element: Comparable {
