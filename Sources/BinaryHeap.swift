@@ -82,6 +82,10 @@ public class BinaryHeap<Element> {
 
         return CFBinaryHeapContainsValue(heap, pointer)
     }
+
+    public func removeAllObjects() {
+        CFBinaryHeapRemoveAllValues(heap)
+    }
 }
 
 extension BinaryHeap where Element: Comparable {

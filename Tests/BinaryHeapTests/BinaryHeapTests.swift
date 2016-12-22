@@ -103,6 +103,18 @@ class BinaryHeapTests: XCTestCase {
         XCTAssertFalse(heap.contains(Foo(-1)))
     }
 
+    func testRemoveAllValues() {
+        let (heap, foos) = createFoos()
+
+        XCTAssertEqual(heap.count(), foos.count)
+        XCTAssertGreaterThan(heap.count(), 0)
+
+        heap.removeAllObjects()
+        XCTAssertEqual(heap.count(), 0)
+        XCTAssertNil(heap.peek())
+        XCTAssertNil(heap.pop())
+    }
+
 
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
         return [
@@ -112,6 +124,7 @@ class BinaryHeapTests: XCTestCase {
             ("testNonObject", testNonObject),
             ("testCount", testCount),
             ("testContains", testContains),
+            ("testRemoveAllValues", testRemoveAllValues),
         ]
     }
 }
