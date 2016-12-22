@@ -35,7 +35,31 @@ class BinaryHeapTests: XCTestCase {
         for foo in sortedFoos {
             XCTAssertEqual(foo, h.pop(), "Heap should pop Foos in sorted order")
         }
+        XCTAssertNil(h.pop(), "Empty heap pops() nil")
     }
+
+    func testReverseOrder() {
+        let heap = BinaryHeap<Foo>() {
+            if $1 < $0 {
+                return .compareLessThan
+            } else if $1 > $0 {
+                return .compareGreaterThan
+            } else {
+                return .compareEqualTo
+            }
+        }
+
+        let foos = [Foo(10), Foo(1)]
+        for foo in foos {
+            heap.push(foo)
+        }
+
+        XCTAssertEqual(heap.pop(), foos[0], "Heap should pop foos in reverse sorted order")
+        XCTAssertEqual(heap.pop(), foos[1], "Heap should pop foos in reverse sorted order")
+        XCTAssertNil(heap.pop(), "Empty heap pops() nil")
+    }
+
+
 
 
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {

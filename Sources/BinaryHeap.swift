@@ -1,15 +1,24 @@
 import Foundation
 
+fileprivate typealias CompareElementFunction = (UnsafeRawPointer, UnsafeRawPointer) -> CFComparisonResult
 
 /*:
  Wrapper around CFBinaryHeap
  */
 public class BinaryHeap<Element: Comparable & AnyObject & CustomStringConvertible> {
-    typealias CompareElementFunction = (UnsafeRawPointer, UnsafeRawPointer) -> CFComparisonResult
-
     let heap: CFBinaryHeap
 
-    public init() {
+    public convenience init() {
+        let compareBox = CompareBox(BinaryHeap<Element>._compare)
+        self.init(compareBox)
+    }
+
+    public convenience init(compare: @escaping ((Element, Element) -> CFComparisonResult)) {
+        let compareBox = CompareBox(compare)
+        self.init(compareBox)
+    }
+
+    private init(_ compareBox: CompareBox) {
         var callbacks = CFBinaryHeapCallBacks(
             version: 0,
             retain: { _, obj in
@@ -30,17 +39,18 @@ public class BinaryHeap<Element: Comparable & AnyObject & CustomStringConvertibl
                     fatalError("CFBinaryHeap called compare with a nil parameter")
                 }
 
-                let contextCompare = Unmanaged<AnyObject>.fromOpaque(contextPtr).takeUnretainedValue() as! CompareElementFunction
-                return contextCompare(obj1, obj2)
+                let compareBox = Unmanaged<CompareBox>.fromOpaque(contextPtr).takeUnretainedValue()
+                return compareBox.compare(obj1, obj2)
         }
         )
+
         var context = CFBinaryHeapCompareContext(
             version: 0,
-            info: Unmanaged.passRetained(BinaryHeap<Element>._compare as AnyObject).toOpaque(),
+            info: Unmanaged.passRetained(compareBox).toOpaque(),
             retain: {
-                UnsafeRawPointer(Unmanaged<AnyObject>.fromOpaque($0!).retain().toOpaque())
+                UnsafeRawPointer(Unmanaged<CompareBox>.fromOpaque($0!).retain().toOpaque())
         }, release: {
-            Unmanaged<AnyObject>.fromOpaque($0!).release()
+            Unmanaged<CompareBox>.fromOpaque($0!).release()
         }, copyDescription: nil)
 
 
@@ -79,4 +89,20 @@ public class BinaryHeap<Element: Comparable & AnyObject & CustomStringConvertibl
 
 }
 
+fileprivate class CompareBox {
+    let compare: CompareElementFunction
+
+    init(_ compare: @escaping CompareElementFunction) {
+        self.compare = compare
+    }
+
+    init<T: AnyObject>(_ compare: @escaping ((T, T) -> CFComparisonResult)) {
+        self.compare = { (p1: UnsafeRawPointer, p2: UnsafeRawPointer) -> CFComparisonResult in
+            let o1 = Unmanaged<T>.fromOpaque(p1).takeUnretainedValue()
+            let o2 = Unmanaged<T>.fromOpaque(p2).takeUnretainedValue()
+
+            return compare(o1, o2)
+        }
+    }
+}
 
