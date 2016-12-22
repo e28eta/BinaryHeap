@@ -5,20 +5,15 @@ fileprivate typealias CompareElementFunction = (UnsafeRawPointer, UnsafeRawPoint
 /*:
  Wrapper around CFBinaryHeap
  */
-public class BinaryHeap<Element: Comparable & AnyObject & CustomStringConvertible> {
+public class BinaryHeap<Element: AnyObject & CustomStringConvertible> {
     let heap: CFBinaryHeap
-
-    public convenience init() {
-        let compareBox = CompareBox(BinaryHeap<Element>._compare)
-        self.init(compareBox)
-    }
 
     public convenience init(compare: @escaping ((Element, Element) -> CFComparisonResult)) {
         let compareBox = CompareBox(compare)
         self.init(compareBox)
     }
 
-    private init(_ compareBox: CompareBox) {
+    fileprivate init(_ compareBox: CompareBox) {
         var callbacks = CFBinaryHeapCallBacks(
             version: 0,
             retain: { _, obj in
@@ -73,6 +68,15 @@ public class BinaryHeap<Element: Comparable & AnyObject & CustomStringConvertibl
         return Unmanaged<Element>.fromOpaque(result).takeUnretainedValue()
     }
 
+
+}
+
+extension BinaryHeap where Element: Comparable {
+    public convenience init() {
+        let compareBox = CompareBox(BinaryHeap<Element>._compare)
+        self.init(compareBox)
+    }
+
     static func _compare(p1: UnsafeRawPointer, p2: UnsafeRawPointer) -> CFComparisonResult {
         let o1 = Unmanaged<Element>.fromOpaque(p1).takeUnretainedValue()
         let o2 = Unmanaged<Element>.fromOpaque(p2).takeUnretainedValue()
@@ -85,8 +89,6 @@ public class BinaryHeap<Element: Comparable & AnyObject & CustomStringConvertibl
             return .compareEqualTo
         }
     }
-
-
 }
 
 fileprivate class CompareBox {
