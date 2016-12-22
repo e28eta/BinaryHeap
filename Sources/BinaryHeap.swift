@@ -77,6 +77,12 @@ public class BinaryHeap<Element> {
         return CFBinaryHeapGetCount(heap)
     }
 
+    public func count(of e: Element) -> Int {
+        let pointer = Unmanaged<AnyObject>.passRetained(e as AnyObject).toOpaque()
+
+        return CFBinaryHeapGetCountOfValue(heap, pointer)
+    }
+
     public func contains(_ e: Element) -> Bool {
         let pointer = Unmanaged<AnyObject>.passRetained(e as AnyObject).toOpaque()
 

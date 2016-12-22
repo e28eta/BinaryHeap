@@ -92,6 +92,12 @@ class BinaryHeapTests: XCTestCase {
         XCTAssertEqual(heap.count(), foos.count)
         let _ = heap.pop()
         XCTAssertEqual(heap.count(), foos.count - 1)
+
+        XCTAssertEqual(heap.count(of: foos[0]), 0)
+        for _ in 0..<5 {
+            heap.push(foos[0])
+        }
+        XCTAssertEqual(heap.count(of: foos[0]), 5)
     }
 
     func testContains() {
