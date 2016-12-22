@@ -153,6 +153,18 @@ class BinaryHeapTests: XCTestCase {
         XCTAssertNil(copy.pop())
     }
 
+    func testForEach() {
+        let (heap, foos) = createFoos()
+
+        var eachFoo: [Foo] = []
+
+        heap.forEach { foo in
+            eachFoo.append(foo)
+        }
+
+        XCTAssertEqual(eachFoo, foos, "must iterate through each element in order")
+    }
+
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
         return [
             ("testPopInSortedOrder", testPopInSortedOrder),
@@ -164,6 +176,7 @@ class BinaryHeapTests: XCTestCase {
             ("testRemoveAllValues", testRemoveAllValues),
             ("testMemoryUsage", testMemoryUsage),
             ("testCopy", testCopy),
+            ("testForEach", testForEach),
         ]
     }
 }

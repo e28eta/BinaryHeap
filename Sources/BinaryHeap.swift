@@ -100,6 +100,16 @@ public class BinaryHeap<Element> {
     public func removeAllObjects() {
         CFBinaryHeapRemoveAllValues(heap)
     }
+
+    public func forEach(_ body: @escaping (Element) -> ()) {
+        let applyBox = ApplyBox(body)
+
+        CFBinaryHeapApplyFunction(heap, { (pointer: UnsafeRawPointer?, context: UnsafeMutableRawPointer?) in
+            guard let pointer = pointer, let context = context else { return }
+
+            Unmanaged<ApplyBox>.fromOpaque(context).takeUnretainedValue().apply(pointer)
+        }, Unmanaged<ApplyBox>.passUnretained(applyBox).toOpaque())
+    }
 }
 
 extension BinaryHeap where Element: Comparable {
@@ -127,6 +137,18 @@ fileprivate class CompareBox {
             } else {
                 return .compareEqualTo
             }
+        }
+    }
+}
+
+fileprivate class ApplyBox {
+    let apply: (UnsafeRawPointer) -> Void
+
+    init<T>(_ apply: @escaping (T) -> Void) {
+        self.apply = { pointer in
+            let object = Unmanaged<AnyObject>.fromOpaque(pointer).takeUnretainedValue() as! T
+            
+            apply(object)
         }
     }
 }
