@@ -40,13 +40,7 @@ class BinaryHeapTests: XCTestCase {
 
     func testReverseOrder() {
         let heap = BinaryHeap<Foo>() {
-            if $1 < $0 {
-                return .compareLessThan
-            } else if $1 > $0 {
-                return .compareGreaterThan
-            } else {
-                return .compareEqualTo
-            }
+            return $1 < $0
         }
 
         let foos = [Foo(10), Foo(1)]

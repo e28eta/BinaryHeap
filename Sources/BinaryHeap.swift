@@ -8,9 +8,8 @@ fileprivate typealias CompareElementFunction = (UnsafeRawPointer, UnsafeRawPoint
 public class BinaryHeap<Element: AnyObject & CustomStringConvertible> {
     let heap: CFBinaryHeap
 
-    public convenience init(compare: @escaping ((Element, Element) -> CFComparisonResult)) {
-        let compareBox = CompareBox(compare)
-        self.init(compareBox)
+    public convenience init(by areInIncreasingOrder: @escaping ((Element, Element) -> Bool)) {
+        self.init(CompareBox(by: areInIncreasingOrder))
     }
 
     fileprivate init(_ compareBox: CompareBox) {
@@ -73,37 +72,25 @@ public class BinaryHeap<Element: AnyObject & CustomStringConvertible> {
 
 extension BinaryHeap where Element: Comparable {
     public convenience init() {
-        let compareBox = CompareBox(BinaryHeap<Element>._compare)
-        self.init(compareBox)
-    }
-
-    static func _compare(p1: UnsafeRawPointer, p2: UnsafeRawPointer) -> CFComparisonResult {
-        let o1 = Unmanaged<Element>.fromOpaque(p1).takeUnretainedValue()
-        let o2 = Unmanaged<Element>.fromOpaque(p2).takeUnretainedValue()
-
-        if o1 < o2 {
-            return .compareLessThan
-        } else if o1 > o2 {
-            return .compareGreaterThan
-        } else {
-            return .compareEqualTo
-        }
+        self.init(CompareBox(by: { (o1: Element, o2: Element) -> Bool in o1 < o2 }))
     }
 }
 
 fileprivate class CompareBox {
     let compare: CompareElementFunction
 
-    init(_ compare: @escaping CompareElementFunction) {
-        self.compare = compare
-    }
-
-    init<T: AnyObject>(_ compare: @escaping ((T, T) -> CFComparisonResult)) {
+    init<T: AnyObject>(by areInIncreasingOrder: @escaping ((T, T) -> Bool)) {
         self.compare = { (p1: UnsafeRawPointer, p2: UnsafeRawPointer) -> CFComparisonResult in
             let o1 = Unmanaged<T>.fromOpaque(p1).takeUnretainedValue()
             let o2 = Unmanaged<T>.fromOpaque(p2).takeUnretainedValue()
 
-            return compare(o1, o2)
+            if areInIncreasingOrder(o1, o2) {
+                return .compareLessThan
+            } else if areInIncreasingOrder(o2, o1) {
+                return .compareGreaterThan
+            } else {
+                return .compareEqualTo
+            }
         }
     }
 }
