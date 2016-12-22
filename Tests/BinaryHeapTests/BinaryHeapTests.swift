@@ -35,9 +35,7 @@ class BinaryHeapTests: XCTestCase {
     }
 
     func testReverseOrder() {
-        let heap = BinaryHeap<Foo>() {
-            return $1 < $0
-        }
+        let heap = BinaryHeap<Foo>(ascending: false)
 
         let foos = [Foo(10), Foo(1)]
         for foo in foos {

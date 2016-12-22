@@ -71,8 +71,12 @@ public class BinaryHeap<Element: AnyObject> {
 }
 
 extension BinaryHeap where Element: Comparable {
-    public convenience init() {
-        self.init(CompareBox(by: { (o1: Element, o2: Element) -> Bool in o1 < o2 }))
+    public convenience init(ascending: Bool = true) {
+        if ascending {
+            self.init(CompareBox(by: { (o1: Element, o2: Element) -> Bool in o1 < o2 }))
+        } else {
+            self.init(CompareBox(by: { (o1: Element, o2: Element) -> Bool in o2 < o1 }))
+        }
     }
 }
 
