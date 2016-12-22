@@ -73,14 +73,14 @@ class BinaryHeapTests: XCTestCase {
 
 
     func testNonObject() {
-        let heap = BinaryHeap<AnyObject>() { ($0 as! Baz).value < ($1 as! Baz).value }
+        let heap = BinaryHeap<Baz>() { $0.value < $1.value }
 
         let bazs = [Baz(value: 15), Baz(value: 10)]
         for baz in bazs {
-            heap.push(baz as AnyObject)
+            heap.push(baz)
         }
 
-        XCTAssertEqual((heap.pop() as? Baz)?.value, 10)
+        XCTAssertEqual(heap.pop()?.value, 10)
     }
 
 
@@ -88,7 +88,8 @@ class BinaryHeapTests: XCTestCase {
         return [
             ("testPopInSortedOrder", testPopInSortedOrder),
             ("testReverseOrder", testReverseOrder),
-            ("testNonComparable", testNonComparable)
+            ("testNonComparable", testNonComparable),
+            ("testNonObject", testNonObject),
         ]
     }
 }

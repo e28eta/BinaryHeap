@@ -7,5 +7,4 @@ to be working.
 TODO:
 - Verify memory correctness
 - Expose more CFBinaryHeap functionality
-- Investigate AnyObject requirement, can this work with structs? https://twitter.com/jtbandes/status/811252709172969472
 

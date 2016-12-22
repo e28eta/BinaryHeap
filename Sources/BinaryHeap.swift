@@ -3,7 +3,7 @@ import Foundation
 /*:
  Wrapper around CFBinaryHeap
  */
-public class BinaryHeap<Element: AnyObject> {
+public class BinaryHeap<Element> {
     let heap: CFBinaryHeap
 
     public convenience init(by areInIncreasingOrder: @escaping ((Element, Element) -> Bool)) {
@@ -50,7 +50,7 @@ public class BinaryHeap<Element: AnyObject> {
     }
 
     public func push(_ e: Element) {
-        let pointer = Unmanaged<Element>.passRetained(e).toOpaque()
+        let pointer = Unmanaged<AnyObject>.passRetained(e as AnyObject).toOpaque()
 
         CFBinaryHeapAddValue(heap, pointer)
     }
@@ -62,7 +62,7 @@ public class BinaryHeap<Element: AnyObject> {
 
         CFBinaryHeapRemoveMinimumValue(heap)
 
-        return Unmanaged<Element>.fromOpaque(result).takeUnretainedValue()
+        return (Unmanaged<AnyObject>.fromOpaque(result).takeUnretainedValue() as! Element)
     }
 }
 
@@ -79,10 +79,10 @@ extension BinaryHeap where Element: Comparable {
 fileprivate class CompareBox {
     let compare: ((UnsafeRawPointer, UnsafeRawPointer) -> CFComparisonResult)
 
-    init<T: AnyObject>(by areInIncreasingOrder: @escaping ((T, T) -> Bool)) {
+    init<T>(by areInIncreasingOrder: @escaping ((T, T) -> Bool)) {
         self.compare = { (p1: UnsafeRawPointer, p2: UnsafeRawPointer) -> CFComparisonResult in
-            let o1 = Unmanaged<T>.fromOpaque(p1).takeUnretainedValue()
-            let o2 = Unmanaged<T>.fromOpaque(p2).takeUnretainedValue()
+            let o1 = Unmanaged<AnyObject>.fromOpaque(p1).takeUnretainedValue() as! T
+            let o2 = Unmanaged<AnyObject>.fromOpaque(p2).takeUnretainedValue() as! T
 
             if areInIncreasingOrder(o1, o2) {
                 return .compareLessThan
