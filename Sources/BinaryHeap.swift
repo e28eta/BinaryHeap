@@ -56,11 +56,19 @@ public class BinaryHeap<Element> {
     }
 
     public func pop() -> Element? {
-        guard let result = CFBinaryHeapGetMinimum(heap) else {
+        guard let result = peek() else {
             return nil
         }
 
         CFBinaryHeapRemoveMinimumValue(heap)
+
+        return result
+    }
+
+    public func peek() -> Element? {
+        guard let result = CFBinaryHeapGetMinimum(heap) else {
+            return nil
+        }
 
         return (Unmanaged<AnyObject>.fromOpaque(result).takeUnretainedValue() as! Element)
     }

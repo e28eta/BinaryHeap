@@ -40,6 +40,9 @@ class BinaryHeapTests: XCTestCase {
 
         let sortedFoos = foos.sorted()
 
+        XCTAssertEqual(sortedFoos[0], h.peek(), "peek should result in first element")
+        XCTAssertEqual(sortedFoos[0], h.peek(), "peek should result in first element")
+
         for foo in sortedFoos {
             XCTAssertEqual(foo, h.pop(), "Heap should pop Foos in sorted order")
         }
