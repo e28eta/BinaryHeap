@@ -62,26 +62,40 @@ class BinaryHeapTests: XCTestCase {
     }
 
     func testNonComparable() {
-        let heap = BinaryHeap<Bar>() { $0.value < $1.value }
+        let sort: (Bar, Bar) -> Bool = { $0.value < $1.value }
+        let equal: (Bar, Bar) -> Bool = { $0.value == $1.value }
+        let heap = BinaryHeap<Bar>(by: sort)
 
         let bars = [Bar(1), Bar(10), Bar(3)]
         for bar in bars {
             heap.push(bar)
         }
 
+        let array = Array(heap)
+        let sorted = bars.sorted(by: sort)
+
         XCTAssertEqual(heap.pop()?.value, bars[0].value,
                        "Heap should work with non-Comparable objects if comparison closure provided")
+
+        XCTAssertTrue(array.elementsEqual(sorted, by: equal), "arrays should be equal")
     }
 
     func testNonObject() {
-        let heap = BinaryHeap<Baz>() { $0.value < $1.value }
+        let sort: (Baz, Baz) -> Bool = { $0.value < $1.value }
+        let equal: (Baz, Baz) -> Bool = { $0.value == $1.value }
+        let heap = BinaryHeap<Baz>(by: sort)
 
         let bazs = [Baz(value: 15), Baz(value: 10)]
         for baz in bazs {
             heap.push(baz)
         }
 
+        let array = Array(heap)
+        let sorted = bazs.sorted(by: sort)
+
         XCTAssertEqual(heap.pop()?.value, 10)
+
+        XCTAssertTrue(array.elementsEqual(sorted, by: equal), "arrays should be equal")
     }
 
     func testCount() {
@@ -165,6 +179,12 @@ class BinaryHeapTests: XCTestCase {
         XCTAssertEqual(eachFoo, foos, "must iterate through each element in order")
     }
 
+    func testToArray() {
+        let (heap, foos) = createFoos()
+
+        XCTAssertEqual(Array(heap), foos)
+    }
+
     static var allTests : [(String, (BinaryHeapTests) -> () throws -> Void)] {
         return [
             ("testPopInSortedOrder", testPopInSortedOrder),
@@ -177,6 +197,7 @@ class BinaryHeapTests: XCTestCase {
             ("testMemoryUsage", testMemoryUsage),
             ("testCopy", testCopy),
             ("testForEach", testForEach),
+            ("testToArray", testToArray),
         ]
     }
 }

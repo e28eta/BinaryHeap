@@ -110,6 +110,21 @@ public class BinaryHeap<Element> {
             Unmanaged<ApplyBox>.fromOpaque(context).takeUnretainedValue().apply(pointer)
         }, Unmanaged<ApplyBox>.passUnretained(applyBox).toOpaque())
     }
+
+    fileprivate func toArray() -> [Element] {
+        let count = self.count()
+        let buffer = UnsafeMutablePointer<UnsafeRawPointer?>.allocate(capacity: count)
+        defer {
+            buffer.deinitialize(count: count)
+            buffer.deallocate(capacity: count)
+        }
+
+        CFBinaryHeapGetValues(heap, buffer)
+
+        return (0..<count).map {
+            Unmanaged<AnyObject>.fromOpaque(buffer[$0]!).takeUnretainedValue() as! Element
+        }
+    }
 }
 
 extension BinaryHeap where Element: Comparable {
@@ -119,6 +134,12 @@ extension BinaryHeap where Element: Comparable {
         } else {
             self.init(CompareBox(by: { (o1: Element, o2: Element) -> Bool in o2 < o1 }))
         }
+    }
+}
+
+extension Array {
+    public init<H: BinaryHeap<Element>>(_ heap: H) {
+        self = heap.toArray()
     }
 }
 
